@@ -6,8 +6,7 @@
 4. Run the project `npm run start:dev`
 
 # Documentation
-
-The documentation is available at endpoint
+Postman Collection at the root of the project
+The documentation is also available at endpoint
 `/api-docs`
 
-# Postman Collection at the root of the project

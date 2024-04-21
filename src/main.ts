@@ -18,10 +18,9 @@ async function bootstrap() {
   app.setGlobalPrefix('api/v1');
 
   const options = new DocumentBuilder()
-    .setTitle('Profiles example')
+    .setTitle('Profiles documentation')
     .setDescription('The Profiles API description')
     .setVersion('1.0')
-    .addTag('profiles')
     .build();
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('api-docs', app, document);

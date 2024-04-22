@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from 'src/prisma.service';
+import { PrismaService } from '../prisma.service';
 import { PaginationDto, UpdateProfileDto, CreateProfileDto } from './dto';
 
 @Injectable()
@@ -13,14 +13,16 @@ export class ProfilesService {
   }
 
   async findAll(paginationDto: PaginationDto) {
-    const { page, limit } = paginationDto;
+    const page = paginationDto.page || 1;
+    const limit = paginationDto.limit || 10;
+
     const total = await this.prisma.profile.count();
     const lastPage = Math.ceil(total / limit);
 
     return {
       data: await this.prisma.profile.findMany({
-        skip: (page - 1) * limit,
-        take: limit,
+        skip: Number((page - 1) * limit),
+        take: +limit,
         where: { available: true },
       }),
       meta: {
@@ -40,18 +42,19 @@ export class ProfilesService {
     return friend;
   }
 
-  async update(updateFriendDto: UpdateProfileDto, id: number) {
+  async update(updateProfile: UpdateProfileDto, id: number) {
     await this.findOne(id);
     return this.prisma.profile.update({
       where: { id },
-      data: updateFriendDto,
+      data: updateProfile,
     });
   }
 
   async remove(id: number) {
     await this.findOne(id);
-    return await this.prisma.profile.delete({
+    return await this.prisma.profile.update({
       where: { id },
+      data: { available: false },
     });
   }
 }

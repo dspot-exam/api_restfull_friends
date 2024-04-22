@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 
-const generateProfileData = () => ({
+export const generateProfileData = () => ({
   img: faker.image.avatar(),
   first_name: faker.person.firstName(),
   last_name: faker.person.lastName(),
@@ -19,4 +19,21 @@ export const createFakeProfiles = (numProfiles) => {
     profiles.push(profileData);
   }
   return profiles;
+};
+
+export const createFakeConnections = (profiles, total) => {
+  const data = [];
+
+  for (let i = 0; i < total; i++) {
+    let profileId1 = null;
+    const profileId2 = profiles[Math.floor(Math.random() * profiles.length)].id;
+
+    while (profileId1 === profileId2 || profileId1 === null) {
+      profileId1 = profiles[Math.floor(Math.random() * profiles.length)].id;
+    }
+
+    data.push({ profileId1, profileId2 });
+  }
+
+  return data;
 };

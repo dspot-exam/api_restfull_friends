@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common';
-import { createFakeProfiles } from 'src/helpers/seed';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { createFakeConnections, createFakeProfiles } from 'src/helpers/seed';
 import { PrismaService } from 'src/prisma.service';
 
 @Injectable()
@@ -8,6 +8,12 @@ export class SeedService {
 
   async seedProfiles(total: number = 10) {
     const profiles = createFakeProfiles(total);
+
+    await Promise.all([
+      this.prisma.friend.deleteMany(),
+      this.prisma.profile.deleteMany(),
+      this.prisma.$executeRaw`UPDATE sqlite_sequence SET seq = 0`,
+    ]);
 
     return await this.prisma.profile.createMany({
       data: profiles,
@@ -20,20 +26,14 @@ export class SeedService {
       select: { id: true },
     });
 
-    const data = [];
-
-    for (let i = 0; i < total; i++) {
-      let profileId1 = null;
-      const profileId2 =
-        profiles[Math.floor(Math.random() * profiles.length)].id;
-
-      while (profileId1 === profileId2 || profileId1 === null) {
-        profileId1 = profiles[Math.floor(Math.random() * profiles.length)].id;
-      }
-
-      data.push({ profileId1, profileId2 });
+    if (!profiles.length) {
+      throw new BadRequestException(
+        'No available profiles to create connections, please seed profiles first.',
+      );
     }
 
-    return await this.prisma.friend.createMany({ data });
+    return await this.prisma.friend.createMany({
+      data: createFakeConnections(profiles, total),
+    });
   }
 }

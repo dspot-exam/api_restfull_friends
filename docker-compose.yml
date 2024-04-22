@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  profile-crud:
+    build:
+      context: .
+      args:
+        - DATABASE_URL=${DATABASE_URL}
+        - PORT=${PORT}
+    environment:
+      - PORT=3000
+      - DATABASE_URL=${DATABASE_URL}
+    ports:
+      - 3000:${PORT}

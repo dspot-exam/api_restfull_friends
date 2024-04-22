@@ -44,11 +44,10 @@ describe('Test for shorter connection between two profiles', () => {
   it('should return the shorter connection between two profiles', async () => {
     const result = await service.getShorterConnection(1, 5);
 
-    const path = [1, 2, 3, 5];
+    const path = [2, 3];
 
     expect(result).toEqual({
       path,
-      steps: path.length - 1,
     });
   }, 50000);
 });

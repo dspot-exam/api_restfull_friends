@@ -25,7 +25,6 @@ export class FriendsService {
     profileId2: number,
   ): Promise<{
     path: number[];
-    steps: number;
   }> {
     const visited = new Set<number>();
     const queue: { profileId: number; path: number[] }[] = [
@@ -35,7 +34,7 @@ export class FriendsService {
     while (queue.length > 0) {
       const { profileId, path } = queue.shift();
       visited.add(profileId);
-      
+
       const connections = await this.prisma.friend.findMany({
         where: {
           OR: [{ profileId1: profileId }, { profileId2: profileId }],
@@ -52,8 +51,9 @@ export class FriendsService {
         // Check if the neighbor is the target profile
         if (neighborId === profileId2) {
           return {
-            path: [...path, neighborId],
-            steps: path.length,
+            path: [...path, neighborId].filter(
+              (id) => id !== profileId1 && id !== profileId2,
+            ),
           };
         }
 
@@ -65,7 +65,6 @@ export class FriendsService {
     }
     return {
       path: [],
-      steps: -1,
     };
   }
 }
